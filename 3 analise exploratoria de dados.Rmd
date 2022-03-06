@@ -1,0 +1,40 @@
+---
+title: "Análise Exploratória de Dados"
+output: html_notebook
+author: "Autor: Rodolfo Bolconte"
+---
+#### Fonte: [R For Data Science Chapter 7](https://r4ds.had.co.nz/exploratory-data-analysis.html)
+
+```{r warning=FALSE}
+library(tidyverse)
+```
+
+
+### 1- Variação
+
+Tendência dos valores de uma variável de mudar de medição para medição.
+
+Visualizando distribuições:
+```{r}
+#distribuição de variável em gráfico de barras
+ggplot(data=diamonds) +
+  geom_bar(mapping = aes(x=cut))
+
+#contagem de valores de variável
+count(diamonds, cut)
+
+#variável contínua
+ggplot(data=diamonds) +
+  geom_histogram(mapping=aes(x=carat), binwidth = 0.5)
+
+#distribuição em gráfico de linha
+small = diamonds %>% 
+  filter(carat<3)
+
+ggplot(data=small, mapping=aes(x=carat, colour=cut)) +
+         geom_freqpoly(binwidth=0.5)
+
+ggplot(data=small, mapping=aes(x=carat)) +
+  geom_bar()
+```
+

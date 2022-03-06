@@ -3,16 +3,15 @@ title: "Introdução ao Dplyr"
 output: html_notebook
 author: "Autor: Rodolfo Bolconte"
 ---
-
-#### Fonte do Tutorial: [Blog Dados Aleatórios](https://www.dadosaleatorios.com.br/post/introducao-ao-dplyr/)
+#### Fonte: [Blog Dados Aleatórios](https://www.dadosaleatorios.com.br/post/introducao-ao-dplyr/)
 
 ### 1- Instalando o Tidyverse
 
-O Tidyverse é um "pacote de pacotes" do R que possui o pacote Dplyr e Starwars, que consistem numa manipulação de dados mais simples e num conjunto de dados dos personagens da fraquia Star Wars, respectivamente.
+O Tidyverse é um "pacote de pacotes" do R que possui o pacote Dplyr e Starwars, que consistem numa manipulação de dados mais simples e num conjunto de dados dos personagens da fraquia Star Wars, respectivamente. Para instalar, descomente a primeira linha, e sempre que utilizar, necessário inserir `library`.
 
 ```{r}
 #install.packages("tidyverse")
-#require(tidyverse)
+library(tidyverse)
 ```
 
 ### 2- Dataset Utilizado

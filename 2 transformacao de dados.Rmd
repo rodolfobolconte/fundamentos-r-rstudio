@@ -1,0 +1,152 @@
+---
+title: "Transformação de Dados"
+output: html_notebook
+author: "Autor: Rodolfo Bolconte"
+---
+#### Fonte: [R For Data Science Chapter 5](https://r4ds.had.co.nz/transform.html)
+
+### 1- Utilização de Pacotes
+
+Serão utilizados os pacotes `nycflights13` com o dataset de todos os vôos realizados em New York no ano de 2013 e `tidyverse` para a manipulação dos dados em geral.
+
+```{r messages=FALSE warnings=FALSE}
+#install.packages("nycflights13")
+library(nycflights13)
+library(tidyverse)
+```
+### 2- Resolução dos Exercícios
+
+#### 5.2.4
+
+Questão 1 - Encontrar os vôos.
+
+```{r}
+#1 vôos com 2 ou mais horas de atraso
+filter(flights, dep_delay>=120)
+
+#2 vôos para Houston (IAH ou HOU)
+filter(flights, dest=="IAH" | dest=="HOU")
+
+#3 vôos das empresas United (UA), American (AA) ou Delta (DL)
+filter(flights, carrier=="UA" | carrier=="AA" | carrier=="DL")
+
+#4 vôos partidos de julho a setembro
+filter(flights, month==7 | month==8 | month==9)
+
+#5 chegou com mais de 2 horas de atraso mas não saiu atrasado
+filter(flights, dep_delay<=0 & arr_delay>=120)
+
+#6 Atrasaram pelo menos uma hora, mas recuperaram mais de 30 minutos de voo
+filter(flights, dep_delay>=60 & arr_delay<=-30)
+
+#7 Partiu entre meia-noite e 6h (inclusive)
+filter(flights, dep_time<=600)
+```
+
+Questão 2 - utilizar a função `between()` para simplificar o código da Questão 1.
+
+```{r}
+#1 vôos com 2 ou mais horas de atraso
+filter(flights, between(dep_delay, 120, 9999))
+
+#4 vôos partidos de julho a setembro
+filter(flights, between(month, 7, 9))
+
+#6 Atrasaram pelo menos uma hora, mas recuperaram mais de 30 minutos de voo
+filter(flights, dep_delay>=60 & arr_delay<=-30)
+
+#7 Partiu entre meia-noite e 6h (inclusive)
+filter(flights, between(dep_time, 0, 600))
+```
+
+Questão 3 - Quantos voos faltam `dep_time`? Que outras variáveis estão faltando? O que essas linhas representam?
+
+
+```{r}
+#toda as informações de horários dos ôos  
+flights %>% 
+  filter(is.na(dep_time))
+```
+
+#### 5.3.1
+
+Questão 1 - Como você poderia usar arrange()para classificar todos os valores ausentes desde o início? (Dica: use is.na()).
+```{r}
+flights[1:4] %>% 
+  arrange(!is.na(dep_time), dep_time)
+```
+Questão 2 - Classifique `flights` para encontrar os voos mais atrasados. Encontre os voos que partiram mais cedo.
+```{r}
+#apenas as chegadas atrasadas em ordem da maior para menor
+flights %>% 
+  filter(arr_delay>0) %>% 
+  arrange(desc(arr_delay))
+
+#apenas decolagem adiantada da maior para menor
+flights %>%
+  filter(dep_delay<0) %>% 
+  arrange((dep_delay))
+```
+Questão 3 - Classifique `flights` para encontrar os voos mais rápidos (velocidade mais alta).
+```{r}
+#vôos mais rápidos de acordo com o tempo no ar
+flights %>% 
+  arrange(air_time)
+```
+
+Questão 4 - Quais voos viajaram mais longe? Qual viajou mais curto?
+```{r}
+#vôos mais longos
+arrange(flights, desc(distance))
+
+#vôos mais curtos
+arrange(flights, distance)
+```
+#### 5.4.1
+
+Questão 1 - Mostre as diferentes formas de selecionar dep_time, dep_delay, arr_time e arr_delay de de flights.
+```{r}
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+
+select(flights, starts_with('dep'), starts_with('arr'))
+
+select(flights, ends_with('time'), ends_with('delay')) %>% 
+  select(!starts_with(c('sched', 'air')))
+```
+
+Questão 2 - O que acontece se você incluir o nome de uma variável várias vezes em um `select()`?
+```{r}
+select(flights, dep_time, dep_time, dep_time, dep_time)
+```
+Questão 3 - O que a função `any_of()` faz? Por que isso pode ser útil em conjunto com esse vetor? `vars <- c("year", "month", "day", "dep_delay", "arr_delay")`
+```{r}
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+
+flights %>% 
+  select(any_of(vars))
+
+select(flights, contains("TIME"))
+```
+
+#### 5.5.2
+
+Questão 1 - Atualmente, `dep_time` e `sched_dep_time` são convenientes de se olhar, mas difíceis de calcular porque não são números realmente contínuos. Converta-os em uma representação mais conveniente do número de minutos desde a meia-noite.
+```{r}
+flights %>%
+  select(dep_time) %>% 
+  mutate(dep_min = (dep_time%/%100)*60 + dep_time%%100)
+```
+Questão 2 - Compare `air_time` com `arr_time - dep_time`. O que você espera ver? O que você vê? O que você precisa fazer para consertar?
+
+```{r}
+flights %>% 
+  select(air_time, dep_time, arr_time) %>% 
+  mutate("arr-dep"=arr_time-dep_time)
+
+flights %>% 
+  select(air_time, dep_time, arr_time)
+
+#Manualmente, o tempo de voo não bate ao comparar com a subtração dos minutos de arr_time-dep_time
+  
+```
+
